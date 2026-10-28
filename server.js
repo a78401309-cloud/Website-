@@ -402,7 +402,6 @@ app.post('/submit-application', async (req, res) => {
             return res.redirect('/dashboard?error=channel_not_found');
         }
 
-        // بناء Embed احترافي منظم لجميع الأسئلة الـ 18
         const embed = new EmbedBuilder()
             .setTitle("👑 New Minecraft Staff Application")
             .setDescription(`A new staff application has been submitted by <@${user.id}> for **RavixMC**. Review the details below carefully before taking action.`)
@@ -484,7 +483,14 @@ app.get('/logout', (req, res) => {
     });
 });
 
+// التعديل الخاص بـ Vercel هنا:
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on http://localhost:${PORT}`);
+    });
+}
+
+// تصدير التطبيق ليعمل بنجاح على Vercel Serverless
+module.exports = app;
