@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlDoc">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Application Minecraft</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#09070f] text-white font-sans min-h-screen p-6 md:p-12 selection:bg-purple-500 selection:text-white">
+
+    <div class="max-w-6xl mx-auto space-y-8">
+        
+        <!-- الهيدر + زر تحويل اللغة -->
+        <div class="flex justify-between items-start flex-wrap gap-4">
+            <div>
+                <a href="/dashboard" class="text-gray-400 hover:text-purple-400 text-sm flex items-center gap-2 mb-4 transition">
+                    ← <span data-ar="لوحة التحكم / نموذج التقديم" data-en="Dashboard / Application Form">لوحة التحكم / نموذج التقديم</span>
+                </a>
+                <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 via-fuchsia-400 to-indigo-400 bg-clip-text text-transparent mb-3">
+                    Staff Application Minecraft
+                </h1>
+            </div>
+
+            <!-- زر التبديل بين العربي والإنكليزي -->
+            <button onclick="toggleLanguage()" class="bg-[#130f26] border border-purple-500/30 hover:border-purple-500 text-purple-300 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-purple-500/10 transition">
+                🌐 <span id="langBtnText">English</span>
+            </button>
+        </div>
+
+        <!-- شروط التقديم -->
+        <p class="text-gray-300 text-sm leading-relaxed max-w-4xl bg-[#130f26] border border-purple-500/20 p-6 rounded-2xl shadow-xl shadow-purple-950/20"
+           data-ar="شروط التقديم لفريق الإدارة أن يكون العمر مناسباً، حساب ديسكورد نشط وخالي من المخالفات، معرفة أساسيات اللعبة والإدارة، والالتزام بالقوانين. يحق للإدارة رفض أو قبول أي طلب دون توضيح الأسباب."
+           data-en="Requirements for the staff team: appropriate age, active Discord account with no violations, basic knowledge of the game and administration, and adherence to the rules. Management reserves the right to accept or reject any application without explanation.">
+            شروط التقديم لفريق الإدارة أن يكون العمر مناسباً، حساب ديسكورد نشط وخالي من المخالفات، معرفة أساسيات اللعبة والإدارة، والالتزام بالقوانين. يحق للإدارة رفض أو قبول أي طلب دون توضيح الأسباب.
+        </p>
+
+        <form action="/submit-application" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            
+            <!-- الأسئلة -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <% 
+                const questions = [
+                    { id: 'q1', ar: '1. ما هو اسم المستخدم الخاص بك في ماينكرافت؟', en: '1. What is your Minecraft username?' },
+                    { id: 'q2', ar: '2. ما هو اسم حسابك في ديسكورد؟', en: '2. What is your Discord username?' },
+                    { id: 'q3', ar: '3. كم عمرك؟', en: '3. How old are you?' },
+                    { id: 'q4', ar: '4. من أي دولة أنت؟', en: '4. What country are you from?' },
+                    { id: 'q5', ar: '5. ما هو التوقيت الزمني الخاص بك؟', en: '5. What is your time zone?' },
+                    { id: 'q6', ar: '6. هل حسابك في ماينكرافت أصلي أم مكرك؟', en: '6. Do you have a premium Minecraft account or a cracked account?' },
+                    { id: 'q7', ar: '7. هل لديك ميكروفون يعمل؟', en: '7. Do you have a working microphone?' },
+                    { id: 'q8', ar: '8. كم ساعة يمكنك اللعب يومياً؟', en: '8. How many hours can you play daily?' },
+                    { id: 'q9', ar: '9. هل لديك خبرة إدارية سابقة؟', en: '9. Do you have any previous staff experience?' },
+                    { id: 'q10', ar: '10. لماذا ترغب في الانضمام لفريق الإدارة؟', en: '10. Why do you want to become a staff member?' },
+                    { id: 'q11', ar: '11. لماذا يجب أن نختارك أنت دون غيرك؟', en: '11. Why should we choose you over other applicants?' },
+                    { id: 'q12', ar: '12. ماذا يعني لك أن تكون إدارياً؟', en: '12. What does being a staff member mean to you?' },
+                    { id: 'q13', ar: '13. كيف تتعامل مع شجار بين لاعبين؟', en: '13. How would you handle an argument between two players?' },
+                    { id: 'q14', ar: '14. ماذا تفعل إذا اكتشفت لاعباً يستخدم الهكر؟', en: '14. What would you do if you caught a player using hacks?' },
+                    { id: 'q15', ar: '15. ماذا تفعل إذا استغل أحد الإداريين صلاحياته؟', en: '15. What would you do if a staff member abused their permissions?' },
+                    { id: 'q16', ar: '16. هل تم عقابك أو حظرك سابقاً في سيرفر ماينكرافت؟', en: '16. Have you ever been punished or banned from a Minecraft server?' },
+                    { id: 'q17', ar: '17. هل تتحدث أي لغات أخرى غير الإنجليزية؟', en: '17. Do you speak any languages besides English?' },
+                    { id: 'q18', ar: '18. هل هناك أي شيء آخر تود إخبارنا به؟', en: '18. Is there anything else you would like us to know?' }
+                ];
+                
+                questions.forEach((q, index) => { %>
+                    <div class="bg-[#130f26] border border-purple-500/20 p-6 rounded-2xl space-y-4 shadow-lg hover:border-purple-500/40 transition">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold text-sm"><%= index + 1 %></span>
+                            <label class="text-white font-medium q-label" data-ar="<%= q.ar %>" data-en="<%= q.en %>"><%= q.ar %></label>
+                            <span class="text-purple-400">*</span>
+                        </div>
+                        <input type="text" name="<%= q.id %>" required placeholder="Your answer" oninput="updateProgress()" class="w-full bg-[#09070f] border border-purple-900/40 rounded-xl p-4 text-white focus:border-purple-500 outline-none text-sm transition">
+                    </div>
+                <% }) %>
+
+                <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white py-4 rounded-xl font-bold transition shadow-lg shadow-purple-600/30 text-lg">
+                    <span data-ar="إرسال التقديم 🚀" data-en="Submit Application 🚀">إرسال التقديم 🚀</span>
+                </button>
+            </div>
+
+            <!-- شريط العداد الجانبي (Progress) -->
+            <div class="lg:col-span-1 sticky top-6">
+                <div class="bg-[#130f26] border border-purple-500/20 p-6 rounded-2xl space-y-4 shadow-xl">
+                    <h3 class="text-purple-400 text-sm font-bold tracking-wider">PROGRESS</h3>
+                    <div class="text-xl font-bold text-white" id="progressText">0 of 18 answered</div>
+                    <div class="w-full bg-purple-950 h-2 rounded-full overflow-hidden">
+                        <div id="progressBar" class="bg-gradient-to-r from-purple-500 to-fuchsia-500 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        let currentLang = 'ar';
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            const htmlDoc = document.getElementById('htmlDoc');
+            
+            if (currentLang === 'en') {
+                htmlDoc.setAttribute('dir', 'ltr');
+                htmlDoc.setAttribute('lang', 'en');
+                document.getElementById('langBtnText').innerText = 'العربية';
+            } else {
+                htmlDoc.setAttribute('dir', 'rtl');
+                htmlDoc.setAttribute('lang', 'ar');
+                document.getElementById('langBtnText').innerText = 'English';
+            }
+
+            document.querySelectorAll('[data-ar]').forEach(el => {
+                el.innerText = el.getAttribute(`data-${currentLang}`);
+            });
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const inputs = document.querySelectorAll('input[required]');
+            let answered = 0;
+            inputs.forEach(input => {
+                if (input.value.trim() !== '') answered++;
+            });
+            const total = inputs.length;
+            
+            const wordAnswered = currentLang === 'ar' ? 'مُجاب عنها' : 'answered';
+            const wordOf = currentLang === 'ar' ? 'من' : 'of';
+
+            document.getElementById('progressText').innerText = `${answered} ${wordOf} ${total} ${wordAnswered}`;
+            const percentage = (answered / total) * 100;
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+        }
+    </script>
+</body>
+</html>
